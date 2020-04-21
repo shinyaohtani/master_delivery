@@ -4,18 +4,19 @@ require 'master_delivery/version'
 
 # Deliver master files to appropriate place
 module MasterDelivery
-  class Error < StandardError; end
   require 'fileutils'
   require 'find'
+
+  class Error < StandardError; end
 
   # File delivery class
   # 1. Move the current active files to tmp/
   # 2. Place a symbolic link to the master (or copy of master) in the appropriate directory
   #
   class MasterDelivery
-    # @param master_root [String] Absolute path to the directory including master dirs.
+    # @param master_root [String] Path to the directory including master dirs.
     def initialize(master_root)
-      @master_root = master_root
+      @master_root = File.expand_path(master_root)
       @unique_string = Time.now.strftime('%Y-%m-%d+%H-%M-%S')
     end
 
