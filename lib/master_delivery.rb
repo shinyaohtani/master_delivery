@@ -7,8 +7,6 @@ module MasterDelivery
   require 'fileutils'
   require 'find'
 
-  class Error < StandardError; end
-
   # File delivery class
   # 1. Move the current active files to tmp/
   # 2. Place a symbolic link to the master (or copy of master) in the appropriate directory
