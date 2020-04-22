@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    master_delivery (0.1.0)
+    master_delivery (0.9.0)
 
 GEM
   remote: https://rubygems.org/
