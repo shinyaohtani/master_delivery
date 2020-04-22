@@ -18,7 +18,6 @@ module MasterDelivery
     def initialize(master_root, backup_root = master_root + '/backup')
       @master_root = File.expand_path(master_root)
       @backup_root = File.expand_path(backup_root)
-      @backup_dir  = ''
     end
 
     # @param master_id [String] Top directory name of master
@@ -46,23 +45,22 @@ module MasterDelivery
     def deliver_files(master_id, target_prefix, type: :symbolic_link, dryrun: false)
       utils = dryrun ? FileUtils::DryRun : FileUtils
 
+      backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root)
       Find.find("#{@master_root}/#{master_id}") do |master|
         next unless File::Stat.new(master).file?
 
-        tfile = move_to_backup(master, utils, master_id, target_prefix)
+        tfile = move_to_backup(master, utils, master_id, target_prefix, backup_dir)
         deliver_to_target(master, utils, tfile, type)
       end
-      @backup_dir
+      backup_dir
     end
 
     private
 
     # Move a master file currently used to backup/
-    def move_to_backup(master, utils, master_id, target_prefix)
-      @backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root) if @backup_dir.empty?
-
+    def move_to_backup(master, utils, master_id, target_prefix, backup_dir)
       relative_master = master.delete_prefix("#{@master_root}/#{master_id}")
-      backupfiledir = File.dirname(@backup_dir + relative_master)
+      backupfiledir = File.dirname(backup_dir + relative_master)
       utils.mkdir_p(backupfiledir)
       tfile = relative_master.prepend(target_prefix)
       utils.mv(tfile, backupfiledir, force: true)
