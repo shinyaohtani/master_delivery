@@ -3,8 +3,21 @@
 
 require 'master_delivery'
 
-master_root = File.expand_path(File.dirname($PROGRAM_NAME))
-p master_root
-p ARGV
-#master = MasterDelivery::MasterDelivery.new(master_root)
-#master.deliver_files('home-dot', ENV['HOME'])
+if ARGV.size == 3
+  master_root = File.dirname(File.expand_path(ARGV[0]))
+  master_id   = File.basename(File.expand_path(ARGV[0]))
+  delivery_root = File.expand_path(ARGV[1])
+  backup_root = File.expand_path(ARGV[2])
+
+  md = MasterDelivery::MasterDelivery.new(master_root, backup_root)
+  md.deliver_files(master_id, delivery_root)
+elsif ARGV.size == 2
+  master_root = File.dirname(File.expand_path(ARGV[0]))
+  master_id   = File.basename(File.expand_path(ARGV[0]))
+  delivery_root = File.expand_path(ARGV[1])
+
+  md = MasterDelivery::MasterDelivery.new(master_root)
+  md.deliver_files(master_id, delivery_root)
+else
+  p 'Bad argument'
+end
