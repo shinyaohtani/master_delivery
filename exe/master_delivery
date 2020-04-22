@@ -2,3 +2,9 @@
 # frozen_string_literal: true
 
 require 'master_delivery'
+
+master_root = File.expand_path(File.dirname($PROGRAM_NAME))
+p master_root
+p ARGV
+#master = MasterDelivery::MasterDelivery.new(master_root)
+#master.deliver_files('home-dot', ENV['HOME'])
