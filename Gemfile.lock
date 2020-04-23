@@ -128,8 +128,8 @@ DEPENDENCIES
   master_delivery!
   pry (>= 0.12.2)
   pry-byebug (>= 3.9.0)
-  rake (~> 12.0)
-  rspec (~> 3.0)
+  rake (>= 12.3.3)
+  rspec (>= 3.9.0)
   rubocop (>= 0.80.1)
   rubocop-performance (>= 1.5.2)
   rubocop-rspec (>= 1.38.1)

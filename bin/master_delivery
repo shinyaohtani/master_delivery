@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'lib/cli_master_delivery'
+require 'cli_master_delivery'
 
 cli_md = MasterDelivery::CliMasterDelivery.new
 cli_md.parse_options
