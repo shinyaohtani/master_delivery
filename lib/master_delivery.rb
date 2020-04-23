@@ -15,9 +15,13 @@ module MasterDelivery
   class MasterDelivery
     # @param master_root [String] Path to the dir including master dirs.
     # @param backup_root [String] Path to the dir in which backup masters are created.
-    def initialize(master_root, backup_root = master_root + '/backup')
+    def initialize(master_root, backup_root = '')
       @master_root = File.expand_path(master_root)
-      @backup_root = File.expand_path(backup_root)
+      @backup_root = if backup_root.nil? || backup_root.empty?
+                       File.expand_path(master_root + '/backup')
+                     else
+                       File.expand_path(backup_root)
+                     end
     end
 
     # @param master_id [String] Top directory name of master
