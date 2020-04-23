@@ -23,19 +23,20 @@ module MasterDelivery
     Backup root, or Evacuation destination directory.
     All current active files will be moved into this
     directory maintaining the directory structure.
-    (defualt: MASTER_DIR/../backup)
+    Backup root will be created automatically. (mkdir -p)
+     (defualt: MASTER_DIR/../backup)
   BACKUP
   VALUE_DELIVERY_TYPE = %w[symbolic_link regular_file].freeze
   DESC_DELIVERY_TYPE = <<~TYPE
     Delivery type. "#{VALUE_DELIVERY_TYPE.join('" or "')}" is accepted.
     Master files will be placed in the delivery root as
     symbolic links (ln -s) or regular files (cp).
-    (default: #{VALUE_DELIVERY_TYPE[0]})
+     (default: #{VALUE_DELIVERY_TYPE[0]})
   TYPE
   DESC_DRYRUN = <<~DRYRUN
     Instead of actually moving or copying files, display
     the commands on stderr.
-    (default: --no-dryrun)
+     (default: --no-dryrun)
   DRYRUN
   DESC_BANNER = <<~BANNER
     Deliver all master files you manage in one master snapshot directory to\
@@ -43,6 +44,12 @@ module MasterDelivery
     If the file already exists, back it up and then put the master file.
       visit: https://github.com/shinyaohtani/master_delivery
   BANNER
+
+  MSG_CONFIRMATION = <<~CONFIRMATION
+
+    You can't undo this operation!
+    Did you check that all parameters are correct? [yN]: 
+  CONFIRMATION
 
   # command line wrapper
   class CliMasterDelivery
@@ -62,32 +69,49 @@ module MasterDelivery
         puts 'See more with --help option'
         nil
       end
+      master_dir = File.expand_path(@params[:master])
+      md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
+      return unless confirmation(md)
 
-      # md = MasterDelivery::MasterDelivery.new(master_root, @params[:backup])
       # # md.deliver_files(master_id, @params[:delivery], dryrun: @params[:dryrun])
-      # md.deliver_files(master_id, @params[:delivery], dryrun: true)
+      md.deliver_files(File.basename(master_dir), @params[:delivery], dryrun: true)
     end
 
     private
 
-    def master_root
-      File.dirname(File.expand_path(@params[:master]))
+    def confirmation(md)
+      puts 'All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT'
+      puts ''
+      print_params
+      print MSG_CONFIRMATION.chomp
+      return true if gets == 'y'
+
+      false
     end
 
-    def master_id
-      File.basename(File.expand_path(@params[:master]))
+    def print_params
+      msg = "(-m) MASTER_DIR:   #{@params[:master]}\n"
+      msg += "(-d) DELIVER_ROOT: #{@params[:delivery]}\n"
+      msg += "(-t) DELIVER_TYPE: #{@params[:type]}\n"
+      msg += if @params[:backup].nil? || @params[:backup].empty?
+               "(-b) BACKUP_ROOT:  (default =[MASTER_DIR/../backup])\n"
+             else
+               "(-b) BACKUP_ROOT:  #{@params[:backup]}\n"
+             end
+      msg += "(-D) DRYRUN:       #{@params[:dryrun]}\n"
+      puts msg
     end
 
     def define_options(opts) # rubocop:disable Metrics/AbcSize
       opts.version = VERSION
       opts.separator ' Required:'
-      opts.on('-m [MASTER_DIR]',        '--master [MASTER_DIR]', *DESC_MASTER_DIR.split(/\R/)) { |v| v }
-      opts.on('-d [DELIVERY_ROOT]',     '--delivery [DELIVERY_ROOT]', *DESC_DELIVERY_ROOT.split(/\R/)) { |v| v }
+      opts.on('-m [MASTER_DIR]',    '--master [MASTER_DIR]', *DESC_MASTER_DIR.split(/\R/)) { |v| v }
+      opts.on('-d [DELIVERY_ROOT]', '--delivery [DELIVERY_ROOT]', *DESC_DELIVERY_ROOT.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Optional:'
-      opts.on('-t [DELIVERY_TYPE]',     '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/)) { |v| v }
-      opts.on('-b [BABACKUP_ROOTCKUP]', '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
-      opts.on('-D',                     '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
+      opts.on('-t [DELIVERY_TYPE]', '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/)) { |v| v }
+      opts.on('-b [BACKUP_ROOT]',   '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
+      opts.on('-D',                 '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Common options:'
       # opts.on('-v',    '--verbose', 'Verbose mode. default: no') { |v| v }
