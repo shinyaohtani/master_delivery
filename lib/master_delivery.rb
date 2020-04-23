@@ -59,6 +59,10 @@ module MasterDelivery
       backup_dir
     end
 
+    def master_files(master_id)
+      Find.find("#{@master_root}/#{master_id}").reject{!File::Stat.new(master).file?}
+    end
+
     private
 
     # Move a master file currently used to backup/
