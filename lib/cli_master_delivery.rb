@@ -75,7 +75,7 @@ module MasterDelivery
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       return unless confirmation(md, master_dir)
 
-      md.deliver(File.basename(master_dir), @params[:delivery], dryrun: true)
+      md.deliver(File.basename(master_dir), @params[:delivery], type: @params[:type], dryrun: true)
     end
 
     private
@@ -89,7 +89,7 @@ module MasterDelivery
       print_params(master_files)
       print_sample(deliv, master_dir, master_files)
       print MSG_CONFIRMATION.chomp # use print instead of puts for '\n'
-      return true if gets == 'y'
+      return true if gets.chomp == 'y'
 
       false
     end
@@ -100,7 +100,7 @@ module MasterDelivery
       sample_backup = deliv.backup_file_path(master_files[0], master_id,
                                              deliv.backup_root + "/#{master_id}-original-XXXX")
       puts <<~SAMPLE
-        
+
         Sample 1/#{master_files.size} is shown here:
         master:            #{master_files[0]}
         will be delivered: #{sample_target}
@@ -171,11 +171,9 @@ module MasterDelivery
     end
 
     def check_param_delivery
-      if @params[:delivery].nil?
-        puts "Specify delivery root by option '-d'"
-      else
-        return true
-      end
+      return true unless @params[:delivery].nil?
+
+      puts "Specify delivery root by option '-d'"
       false
     end
 

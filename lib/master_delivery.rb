@@ -48,6 +48,7 @@ module MasterDelivery
     # @param dryrun [boolean] if set this false, FileUtils::DryRun will be used.
     # note: Even if dryrun: true, @backup_dir is actually created! (for name-consistency)
     def deliver(master_id, target_prefix, type: :symbolic_link, dryrun: false)
+      FileUtils.mkdir_p(@backup_root)
       utils = dryrun ? FileUtils::DryRun : FileUtils
 
       backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root)
