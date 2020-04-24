@@ -10,9 +10,9 @@ module MasterDelivery
     Master snapshot directory. All master files in this
     directory will be placed in the "delivery root",
     maintaining the directory structure.
-    All master files will be delivered to the "delivery root",
-    but not the master snapshot directory itself.
-    i.e. ~/my_snapshot_2e206ef3
+    Only regular files will be delivered. That is,
+    all symbolic link files and empty directories in
+    MASTER_DIR are ignored.
   MASTER
   DESC_DELIVERY_ROOT = <<~DELIVERY
     Delivery root, or destination directory. All master
@@ -29,8 +29,8 @@ module MasterDelivery
   VALUE_DELIVERY_TYPE = %w[symbolic_link regular_file].freeze
   DESC_DELIVERY_TYPE = <<~TYPE
     Delivery type. "#{VALUE_DELIVERY_TYPE.join('" or "')}" is accepted.
-    Master files will be placed in the delivery root as
-    symbolic links (ln -s) or regular files (cp).
+    Master files will be delivered as symbolic links (ln -s)
+    or regular files (cp).
      (default: #{VALUE_DELIVERY_TYPE[0]})
   TYPE
   DESC_DRYRUN = <<~DRYRUN
@@ -39,11 +39,25 @@ module MasterDelivery
      (default: --no-dryrun)
   DRYRUN
   DESC_BANNER = <<~BANNER
-    Deliver all master files you manage in one master snapshot directory to\
-    the appropriate directories you specify, maintaining the master's directory hierarchy.
-    If the file already exists, back it up and then put the master file.
-      visit: https://github.com/shinyaohtani/master_delivery
+    Deliver all master files you manage in one master snapshot directory
+    to the appropriate directories you specify, maintaining the master's
+    directory hierarchy. If the file already exists, back it up and then
+    put the master file. We strongly recommend "dryrun" before running.
   BANNER
+  DESC_EXAMPLE = <<~EXAMPLE
+    Example:
+        If you specify MASTER_DIR and DELIVERY_ROOT as follows:
+           MASTER_DIR:    -m ~/masters/my_home_setting
+           DELIVERY_ROOT: -d /Users/foo
+
+        and suppose master files in MASTER_DIR are as follows:
+           ~/master/my_home_setting/.zshrc
+           ~/master/my_home_setting/work/.rubocop.yml
+
+        then these files will be delivered as the following files:
+           /Users/foo/.zshrc
+           /Users/foo/work/.rubocop.yml
+  EXAMPLE
 
   MSG_CONFIRMATION = <<~CONFIRMATION
 
@@ -147,7 +161,7 @@ module MasterDelivery
 
         #{opts.ver}
         #{DESC_BANNER}
-
+        #{DESC_EXAMPLE}
         Usage: #{opts.program_name} -m <dir> -d <dir> [options]
       BANNER
       opts
