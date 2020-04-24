@@ -7,6 +7,17 @@ module MasterDelivery
   require 'fileutils'
   require 'find'
   require 'tmpdir'
+  MSG_CONFIRMATION_INTRO = <<~CONFIRM_INTRO
+
+    ** Important **
+    All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT
+
+  CONFIRM_INTRO
+  MSG_CONFIRMATION = <<~CONFIRMATION
+
+    You can't undo this operation!
+    Did you check that all parameters are correct? [yN]:
+  CONFIRMATION
 
   # File delivery class
   # 1. Move the current active files to backup/
@@ -59,27 +70,15 @@ module MasterDelivery
       backup_dir
     end
 
-    def master_files(master_id)
-      Find.find("#{@master_root}/#{master_id}").select do |m|
-        # Reject symbolic links.
-        # Some "file?" And "symlink?" Do not work as requested
-        # because they are determined after following a symbolic link.
-        # "link.File.lstat" method does not follow symbolic links,
-        # so you can check if it is a symbolic.
-        File.lstat(m).file?
-      end
-    end
+    def confirm(master_id, target_prefix, type: :symbolic_link, dryrun: false)
+      puts MSG_CONFIRMATION_INTRO
 
-    def relative_master_path(master, master_id)
-      File.expand_path(master).delete_prefix("#{@master_root}/#{master_id}")
-    end
+      print_params(master_id, target_prefix, type: type, dryrun: dryrun)
+      print_sample(master_id, target_prefix)
+      print MSG_CONFIRMATION.chomp # use print instead of puts for '\n'
+      return true if gets.chomp == 'y'
 
-    def backup_file_path(master, master_id, backup_dir)
-      File.expand_path(backup_dir) + relative_master_path(master, master_id)
-    end
-
-    def target_file_path(master, master_id, target_prefix)
-      relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
+      false
     end
 
     private
@@ -103,6 +102,53 @@ module MasterDelivery
       when :regular_file
         utils.cp(master, tfiledir)
       end
+    end
+
+    def print_params(master_id, target_prefix, type:, dryrun:)
+      mfiles = master_files(master_id)
+      msg =  "(-m) MASTER_DIR:   -m #{@master_root}/#{master_id} (#{mfiles.size} master files)\n"
+      msg += "(-d) DELIVER_ROOT: -d #{File.expand_path(target_prefix)}\n"
+      msg += "(-t) DELIVER_TYPE: -t #{type}\n"
+      msg += "(-b) BACKUP_ROOT:  -b #{@backup_root}\n"
+      msg += "(-D) DRYRUN:       #{dryrun ? '--dryrun' : '--no-dryrun'}\n"
+      puts msg
+    end
+
+    def print_sample(master_id, target_prefix)
+      mfiles = master_files(master_id)
+      sample_target = target_file_path(mfiles[0], master_id, target_prefix)
+      sample_backup = backup_file_path(mfiles[0], master_id,
+                                       @backup_root + "/#{master_id}-original-XXXX")
+      puts <<~SAMPLE
+
+        Sample delivery from #{mfiles.size} master files is shown here:
+        master:            #{mfiles[0]}
+        will be delivered: #{sample_target}
+         and backup:       #{sample_backup}
+      SAMPLE
+    end
+
+    def master_files(master_id)
+      Find.find("#{@master_root}/#{master_id}").select do |m|
+        # Reject symbolic links.
+        # Some "file?" and "symlink?" mothods do not work as requested
+        # because they are determined after following a symbolic link.
+        # "link.File.lstat" method does not follow symbolic links,
+        # so you can check if it is a symbolic or not.
+        File.lstat(m).file?
+      end
+    end
+
+    def relative_master_path(master, master_id)
+      File.expand_path(master).delete_prefix("#{@master_root}/#{master_id}")
+    end
+
+    def backup_file_path(master, master_id, backup_dir)
+      File.expand_path(backup_dir) + relative_master_path(master, master_id)
+    end
+
+    def target_file_path(master, master_id, target_prefix)
+      relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
     end
   end
 end

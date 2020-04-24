@@ -59,12 +59,6 @@ module MasterDelivery
            /Users/foo/work/.rubocop.yml
   EXAMPLE
 
-  MSG_CONFIRMATION = <<~CONFIRMATION
-
-    You can't undo this operation!
-    Did you check that all parameters are correct? [yN]:
-  CONFIRMATION
-
   # command line wrapper
   class CliMasterDelivery # rubocop:disable Metrics/ClassLength
     attr_accessor :params
@@ -86,55 +80,16 @@ module MasterDelivery
         return
       end
       master_dir = File.expand_path(@params[:master])
+      master_id = File.basename(master_dir)
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
-      return unless confirmation(md, master_dir)
+      arg_set = [master_id, @params[:delivery]]
+      arg_hash = { type: @params[:type], dryrun: @params[:dryrun] }
+      return unless md.confirm(*arg_set, **arg_hash)
 
-      md.deliver(File.basename(master_dir), @params[:delivery],
-                 type: @params[:type], dryrun: @params[:dryrun])
+      md.deliver(*arg_set, **arg_hash)
     end
 
     private
-
-    def confirmation(deliv, master_dir)
-      puts ''
-      puts '** Important **'
-      puts 'All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT'
-      puts ''
-      master_files = deliv.master_files(File.basename(master_dir))
-      print_params(master_files)
-      print_sample(deliv, master_dir, master_files)
-      print MSG_CONFIRMATION.chomp # use print instead of puts for '\n'
-      return true if gets.chomp == 'y'
-
-      false
-    end
-
-    def print_sample(deliv, master_dir, master_files)
-      master_id = File.basename(master_dir)
-      sample_target = deliv.target_file_path(master_files[0], master_id, @params[:delivery])
-      sample_backup = deliv.backup_file_path(master_files[0], master_id,
-                                             deliv.backup_root + "/#{master_id}-original-XXXX")
-      puts <<~SAMPLE
-
-        Sample 1/#{master_files.size} is shown here:
-        master:            #{master_files[0]}
-        will be delivered: #{sample_target}
-         and backup:       #{sample_backup}
-      SAMPLE
-    end
-
-    def print_params(master_files)
-      msg = "(-m) MASTER_DIR:   #{@params[:master]} (#{master_files.size} master files)\n"
-      msg += "(-d) DELIVER_ROOT: #{@params[:delivery]}\n"
-      msg += "(-t) DELIVER_TYPE: #{@params[:type]}\n"
-      msg += if @params[:backup].nil? || @params[:backup].empty?
-               "(-b) BACKUP_ROOT:  (default =[MASTER_DIR/../backup])\n"
-             else
-               "(-b) BACKUP_ROOT:  #{@params[:backup]}\n"
-             end
-      msg += "(-D) DRYRUN:       #{@params[:dryrun]}\n"
-      puts msg
-    end
 
     def define_options(opts) # rubocop:disable Metrics/AbcSize
       opts.version = VERSION
@@ -170,6 +125,7 @@ module MasterDelivery
     def check_param_consistency
       check_param_master &&
         check_param_delivery &&
+        check_param_backup &&
         check_param_type &&
         check_param_argv
     end
@@ -186,10 +142,38 @@ module MasterDelivery
     end
 
     def check_param_delivery
-      return true unless @params[:delivery].nil?
+      if @params[:delivery].nil?
+        puts "Specify delivery root by option '-d'"
+        return false
+      end
+      master_dir = File.expand_path(@params[:master])
+      delivery_root = File.expand_path(@params[:delivery])
+      if delivery_root.start_with?(master_dir)
+        puts <<~INCLUSION
+          Invalid dirs. MASTER_DIR must not include DELIVERY_ROOT.
+           MASTER_DIR:    #{master_dir}
+           DELIVERY_ROOT: #{delivery_root}
+        INCLUSION
+        return false
+      end
+      true
+    end
 
-      puts "Specify delivery root by option '-d'"
-      false
+    def check_param_backup
+      master_dir = File.expand_path(@params[:master])
+      bkp = @params[:backup]
+      if !bkp.nil? && !bkp.empty?
+        backup_root = File.expand_path(bkp)
+        if backup_root.start_with?(master_dir)
+          puts <<~INCLUSION
+            Invalid dirs. MASTER_DIR must not include BACKUP_ROOT.
+             MASTER_DIR:  #{master_dir}
+             BACKUP_ROOT: #{backup_root}
+          INCLUSION
+          return false
+        end
+      end
+      true
     end
 
     def check_param_type
