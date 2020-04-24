@@ -68,15 +68,26 @@ module MasterDelivery
       end
     end
 
+    def relative_master_path(master, master_id)
+      File.expand_path(master).delete_prefix("#{@master_root}/#{master_id}")
+    end
+    
+    def backup_file_path(master, master_id, backup_dir)
+      File.expand_path(backup_dir) + relative_master(master, master_id)
+    end
+    
+    def target_file_path(master, master_id, target_prefix)
+      relative_master(master, master_id).prepend(File.expand_path(target_prefix))
+    end
+
     private
 
     # Move a master file currently used to backup/
     def move_to_backup(master, utils, master_id, target_prefix, backup_dir)
-      relative_master = master.delete_prefix("#{@master_root}/#{master_id}")
-      backupfiledir = File.dirname(backup_dir + relative_master)
+      backupfiledir = File.dirname(backup_file_path(master, master_id, backup_dir)
       utils.mkdir_p(backupfiledir)
-      tfile = relative_master.prepend(target_prefix)
-      utils.mv(tfile, backupfiledir, force: true)
+      tfile = target_file_path(master, master_id, target_prefix)
+      utils.mv(tfile, backupfiledir), force: true)
       tfile
     end
 
@@ -91,5 +102,6 @@ module MasterDelivery
         utils.cp(master, tfiledir)
       end
     end
+    
   end
 end

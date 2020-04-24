@@ -73,7 +73,7 @@ module MasterDelivery
       end
       master_dir = File.expand_path(@params[:master])
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
-      return unless confirmation(md.master_files(File.basename(master_dir)))
+      return unless confirmation(md, master_dir)
 
       # # md.deliver_files(master_id, @params[:delivery], dryrun: )
       md.deliver_files(File.basename(master_dir), @params[:delivery], dryrun: true)
@@ -81,18 +81,24 @@ module MasterDelivery
 
     private
 
-    def confirmation(master_files)
+    def confirmation(md, master_dir)
       puts 'All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT'
       puts ''
       print_params(master_files)
-      print MSG_CONFIRMATION.chomp
+      puts "1/#{master_files.size} sample is shown here:"
+      master_id = File.basename(master_dir)
+      master_files = md.master_files(master_id)
+      puts "master:               #{master_files[0]}"
+      puts "will be delivered as: #{md.target_file_path(master_files[0], master_id, @params[:delivery])}"
+      puts " and backup as:       #{md.backup_file_path(master_files[0], master_id, md.backup_root+"master_id-original-XXXX")}"
+      print MSG_CONFIRMATION.chomp # use print instead of puts for '\n'
       return true if gets == 'y'
 
       false
     end
 
     def print_params(master_files)
-      msg = "(-m) MASTER_DIR:   #{@params[:master]} (#{master_files.size})\n"
+      msg = "(-m) MASTER_DIR:   #{@params[:master]} (#{master_files.size} master files)\n"
       msg += "(-d) DELIVER_ROOT: #{@params[:delivery]}\n"
       msg += "(-t) DELIVER_TYPE: #{@params[:type]}\n"
       msg += if @params[:backup].nil? || @params[:backup].empty?
