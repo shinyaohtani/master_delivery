@@ -10,12 +10,11 @@ module MasterDelivery
   MSG_CONFIRMATION_INTRO = <<~CONFIRM_INTRO
 
     ** Important **
-    All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT
+    You can't undo this operation!
 
   CONFIRM_INTRO
   MSG_CONFIRMATION = <<~CONFIRMATION
 
-    You can't undo this operation!
     Did you check that all parameters are correct? [yN]:
   CONFIRMATION
 
