@@ -75,26 +75,37 @@ module MasterDelivery
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       return unless confirmation(md, master_dir)
 
-      # # md.deliver_files(master_id, @params[:delivery], dryrun: )
-      md.deliver_files(File.basename(master_dir), @params[:delivery], dryrun: true)
+      md.deliver(File.basename(master_dir), @params[:delivery], dryrun: true)
     end
 
     private
 
-    def confirmation(md, master_dir)
+    def confirmation(deliv, master_dir)
+      puts ''
+      puts '** Important **'
       puts 'All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT'
       puts ''
+      master_files = deliv.master_files(File.basename(master_dir))
       print_params(master_files)
-      puts "1/#{master_files.size} sample is shown here:"
-      master_id = File.basename(master_dir)
-      master_files = md.master_files(master_id)
-      puts "master:               #{master_files[0]}"
-      puts "will be delivered as: #{md.target_file_path(master_files[0], master_id, @params[:delivery])}"
-      puts " and backup as:       #{md.backup_file_path(master_files[0], master_id, md.backup_root+"master_id-original-XXXX")}"
+      print_sample(deliv, master_dir, master_files)
       print MSG_CONFIRMATION.chomp # use print instead of puts for '\n'
       return true if gets == 'y'
 
       false
+    end
+
+    def print_sample(deliv, master_dir, master_files)
+      master_id = File.basename(master_dir)
+      sample_target = deliv.target_file_path(master_files[0], master_id, @params[:delivery])
+      sample_backup = deliv.backup_file_path(master_files[0], master_id,
+                                             deliv.backup_root + "/#{master_id}-original-XXXX")
+      puts <<~SAMPLE
+        
+        Sample 1/#{master_files.size} is shown here:
+        master:            #{master_files[0]}
+        will be delivered: #{sample_target}
+         and backup:       #{sample_backup}
+      SAMPLE
     end
 
     def print_params(master_files)
@@ -162,8 +173,6 @@ module MasterDelivery
     def check_param_delivery
       if @params[:delivery].nil?
         puts "Specify delivery root by option '-d'"
-      elsif !File.directory?(@params[:delivery])
-        puts "Invalid delivery root: #{@params[:delivery]}"
       else
         return true
       end

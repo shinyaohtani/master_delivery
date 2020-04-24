@@ -13,6 +13,7 @@ module MasterDelivery
   # 2. Place a symbolic link to the master (or copy of master) in the appropriate directory
   #
   class MasterDelivery
+    attr_reader :backup_root
     # @param master_root [String] Path to the dir including master dirs.
     # @param backup_root [String] Path to the dir in which backup masters are created.
     def initialize(master_root, backup_root = '')
@@ -46,7 +47,7 @@ module MasterDelivery
     # @param type [symbol] only link (:symbolic_link) or copy master (:regular_file)
     # @param dryrun [boolean] if set this false, FileUtils::DryRun will be used.
     # note: Even if dryrun: true, @backup_dir is actually created! (for name-consistency)
-    def deliver_files(master_id, target_prefix, type: :symbolic_link, dryrun: false)
+    def deliver(master_id, target_prefix, type: :symbolic_link, dryrun: false)
       utils = dryrun ? FileUtils::DryRun : FileUtils
 
       backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root)
@@ -71,23 +72,23 @@ module MasterDelivery
     def relative_master_path(master, master_id)
       File.expand_path(master).delete_prefix("#{@master_root}/#{master_id}")
     end
-    
+
     def backup_file_path(master, master_id, backup_dir)
-      File.expand_path(backup_dir) + relative_master(master, master_id)
+      File.expand_path(backup_dir) + relative_master_path(master, master_id)
     end
-    
+
     def target_file_path(master, master_id, target_prefix)
-      relative_master(master, master_id).prepend(File.expand_path(target_prefix))
+      relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
     end
 
     private
 
     # Move a master file currently used to backup/
     def move_to_backup(master, utils, master_id, target_prefix, backup_dir)
-      backupfiledir = File.dirname(backup_file_path(master, master_id, backup_dir)
+      backupfiledir = File.dirname(backup_file_path(master, master_id, backup_dir))
       utils.mkdir_p(backupfiledir)
       tfile = target_file_path(master, master_id, target_prefix)
-      utils.mv(tfile, backupfiledir), force: true)
+      utils.mv(tfile, backupfiledir, force: true)
       tfile
     end
 
@@ -102,6 +103,5 @@ module MasterDelivery
         utils.cp(master, tfiledir)
       end
     end
-    
   end
 end
