@@ -50,9 +50,7 @@ module MasterDelivery
       utils = dryrun ? FileUtils::DryRun : FileUtils
 
       backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root)
-      Find.find("#{@master_root}/#{master_id}") do |master|
-        next unless File::Stat.new(master).file?
-
+      master_files(master_id).each do |master|
         tfile = move_to_backup(master, utils, master_id, target_prefix, backup_dir)
         deliver_to_target(master, utils, tfile, type)
       end
@@ -60,7 +58,14 @@ module MasterDelivery
     end
 
     def master_files(master_id)
-      Find.find("#{@master_root}/#{master_id}").reject{!File::Stat.new(master).file?}
+      Find.find("#{@master_root}/#{master_id}").select do |m|
+        # Reject symbolic links.
+        # Some "file?" And "symlink?" Do not work as requested
+        # because they are determined after following a symbolic link.
+        # "link.File.lstat" method does not follow symbolic links,
+        # so you can check if it is a symbolic.
+        File.lstat(m).file?
+      end
     end
 
     private

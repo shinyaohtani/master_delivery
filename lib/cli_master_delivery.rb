@@ -48,15 +48,18 @@ module MasterDelivery
   MSG_CONFIRMATION = <<~CONFIRMATION
 
     You can't undo this operation!
-    Did you check that all parameters are correct? [yN]: 
+    Did you check that all parameters are correct? [yN]:
   CONFIRMATION
 
   # command line wrapper
-  class CliMasterDelivery
+  class CliMasterDelivery # rubocop:disable Metrics/ClassLength
     attr_accessor :params
 
+    def initialize
+      @params = { type: VALUE_DELIVERY_TYPE[0].to_sym, dryrun: false }
+    end
+
     def parse_options
-      @params = { type: VALUE_DELIVERY_TYPE[0], dryrun: false }
       OptionParser.new do |opts|
         opts = define_options(opts)
         opts.parse!(ARGV, into: @params)
@@ -64,16 +67,15 @@ module MasterDelivery
     end
 
     def run
-      @params.each { |param| p param }
-      unless check_params
+      unless check_param_consistency
         puts 'See more with --help option'
-        nil
+        return
       end
       master_dir = File.expand_path(@params[:master])
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       return unless confirmation(md.master_files(File.basename(master_dir)))
 
-      # # md.deliver_files(master_id, @params[:delivery], dryrun: @params[:dryrun])
+      # # md.deliver_files(master_id, @params[:delivery], dryrun: )
       md.deliver_files(File.basename(master_dir), @params[:delivery], dryrun: true)
     end
 
@@ -82,7 +84,7 @@ module MasterDelivery
     def confirmation(master_files)
       puts 'All master files inside MASTER_DIR will be delivered to inside DELIVER_ROOT'
       puts ''
-      print_params(deliverer)
+      print_params(master_files)
       print MSG_CONFIRMATION.chomp
       return true if gets == 'y'
 
@@ -109,7 +111,7 @@ module MasterDelivery
       opts.on('-d [DELIVERY_ROOT]', '--delivery [DELIVERY_ROOT]', *DESC_DELIVERY_ROOT.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Optional:'
-      opts.on('-t [DELIVERY_TYPE]', '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/)) { |v| v }
+      opts.on('-t [DELIVERY_TYPE]', '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/), &:to_sym)
       opts.on('-b [BACKUP_ROOT]',   '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
       opts.on('-D',                 '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
       opts.separator ''
@@ -133,7 +135,7 @@ module MasterDelivery
       opts
     end
 
-    def check_params
+    def check_param_consistency
       check_param_master &&
         check_param_delivery &&
         check_param_type &&
@@ -163,7 +165,7 @@ module MasterDelivery
     end
 
     def check_param_type
-      return true if VALUE_DELIVERY_TYPE.include?(@params[:type])
+      return true if VALUE_DELIVERY_TYPE.include?(@params[:type].to_s)
 
       puts "Invalid delivery type: #{@params[:type]} (#{VALUE_DELIVERY_TYPE.join(' or ')})"
       false
