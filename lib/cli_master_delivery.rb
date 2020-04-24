@@ -75,7 +75,8 @@ module MasterDelivery
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       return unless confirmation(md, master_dir)
 
-      md.deliver(File.basename(master_dir), @params[:delivery], type: @params[:type], dryrun: true)
+      md.deliver(File.basename(master_dir), @params[:delivery],
+                 type: @params[:type], dryrun: @params[:dryrun])
     end
 
     private
