@@ -1,8 +1,6 @@
 # MasterDelivery
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/master_delivery`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+`MasterDelivery` is a master file manage utility. `MasterDelivery` delivers all master files managed in a single master snapshot directory into the specified directory while maintaining the hierarchy of the master snapshot directory. If the destination file already exists, back it up first and then deliver the master file.
 
 ## Installation
 
