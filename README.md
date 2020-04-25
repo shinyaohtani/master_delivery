@@ -20,7 +20,52 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+Example:
+    If you specify MASTER_DIR and DELIVERY_ROOT as follows:
+       MASTER_DIR:    -m ~/masters/my_home_setting
+       DELIVERY_ROOT: -d /Users/foo
+
+    and suppose master files in MASTER_DIR are as follows:
+       ~/master/my_home_setting/.zshrc
+       ~/master/my_home_setting/work/.rubocop.yml
+
+    then these files will be delivered as the following files:
+       /Users/foo/.zshrc
+       /Users/foo/work/.rubocop.yml
+
+Usage: master_delivery -m <dir> -d <dir> [options]
+ Required:
+    -m, --master [MASTER_DIR]        Master snapshot directory. All master files in this
+                                     directory will be placed in the "delivery root",
+                                     maintaining the directory structure.
+                                     Only regular files will be delivered. That is,
+                                     all symbolic link files and empty directories in
+                                     MASTER_DIR are ignored.
+    -d, --delivery [DELIVERY_ROOT]   Delivery root, or destination directory. All master
+                                     files will be placed in this while maintaining the master
+                                     directory structure.
+
+ Optional:
+    -t, --type [DELIVERY_TYPE]       Delivery type. "symbolic_link" or "regular_file" is accepted.
+                                     Master files will be delivered as symbolic links (ln -s)
+                                     or regular files (cp).
+                                      (default: symbolic_link)
+    -b, --backup [BACKUP_ROOT]       Backup root, or Evacuation destination directory.
+                                     All current active files will be moved into this
+                                     directory maintaining the directory structure.
+                                     Backup root will be created automatically. (mkdir -p)
+                                      (defualt: MASTER_DIR/../backup)
+    -D, --[no-]dryrun                Instead of actually moving or copying files, display
+                                     the commands on stderr.
+                                     We strongly recommend "--dryrun" before running.
+                                      (default: --no-dryrun)
+
+ Common options:
+    -h, --help                       Show this message
+    -V, --version                    Show version
+
+```
 
 ## Development
 
