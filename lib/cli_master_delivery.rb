@@ -82,6 +82,7 @@ module MasterDelivery
       return unless md.confirm(*arg_set, **arg_hash)
 
       md.deliver(*arg_set, **arg_hash)
+      puts 'done!'
     end
 
     private

@@ -120,7 +120,7 @@ module MasterDelivery
                                        @backup_root + "/#{master_id}-original-XXXX")
       puts <<~SAMPLE
 
-        Sample delivery from #{mfiles.size} master files is shown here:
+        Sample (from #{mfiles.size} master files):
         master:            #{mfiles[0]}
         will be delivered: #{sample_target}
          and backup:       #{sample_backup}
