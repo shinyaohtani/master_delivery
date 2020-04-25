@@ -1,6 +1,6 @@
 # MasterDelivery
 
-`MasterDelivery` is a master file manage utility. `MasterDelivery` delivers all master files managed in a single master snapshot directory into the specified directory while maintaining the hierarchy of the master snapshot directory. If the destination file already exists, back it up first and then deliver the master file.
+`MasterDelivery` is a master file manager utility. `MasterDelivery` delivers all master files managed in a single master snapshot directory into the specified directory while maintaining the hierarchy of the master snapshot directory. If the destination file already exists, back it up first and then deliver the master file.
 
 ## Installation
 
