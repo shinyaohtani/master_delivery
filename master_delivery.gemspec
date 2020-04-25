@@ -11,11 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['shinya_ohtani@yahoo.co.jp']
 
   spec.summary       = 'Deliver master files to appropriate place'
-  spec.description   = <<~DESCRIPTION
-    Deliver all master files you manage in one master directory to the appropriate
-    directories you specify, maintaining the master's directory hierarchy.
-    If the file already exists, back it up and then put the master file.
-  DESCRIPTION
+  spec.description   = MasterDelivery::DESCRIPTION
   spec.homepage      = 'https://github.com/shinyaohtani/master_delivery/tree/master/README.md'
   spec.license       = 'MIT'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.3.0')
@@ -31,8 +27,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
-  spec.bindir        = 'bin'
-  spec.executables   = ['master_delivery']
+  spec.bindir        = 'exe'
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 2.0'

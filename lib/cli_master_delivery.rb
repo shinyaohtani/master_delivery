@@ -36,14 +36,9 @@ module MasterDelivery
   DESC_DRYRUN = <<~DRYRUN
     Instead of actually moving or copying files, display
     the commands on stderr.
+    We strongly recommend "--dryrun" before running.
      (default: --no-dryrun)
   DRYRUN
-  DESC_BANNER = <<~BANNER
-    Deliver all master files you manage in one master snapshot directory
-    to the appropriate directories you specify, maintaining the master's
-    directory hierarchy. If the file already exists, back it up and then
-    put the master file. We strongly recommend "dryrun" before running.
-  BANNER
   DESC_EXAMPLE = <<~EXAMPLE
     Example:
         If you specify MASTER_DIR and DELIVERY_ROOT as follows:
@@ -115,7 +110,7 @@ module MasterDelivery
       opts.banner = <<~BANNER
 
         #{opts.ver}
-        #{DESC_BANNER}
+        #{DESCRIPTION}
         #{DESC_EXAMPLE}
         Usage: #{opts.program_name} -m <dir> -d <dir> [options]
       BANNER
