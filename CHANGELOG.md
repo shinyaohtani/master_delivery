@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.0.2](https://github.com/shinyaohtani/master_delivery/tree/v1.0.2) (2020-04-27)
+
+[Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.1...v1.0.2)
+
+- Confirmation skipping option '--yes' was implemented
+
+**Implemented enhancements:**
+
+- Option to skip confirmation [\#3](https://github.com/shinyaohtani/master_delivery/issues/3)
+
+**Merged pull requests:**
+
+- v1.0.2 release [\#8](https://github.com/shinyaohtani/master_delivery/pull/8) ([shinyaohtani](https://github.com/shinyaohtani))
+- implemented skip-confirmation option [\#6](https://github.com/shinyaohtani/master_delivery/pull/6) ([shinyaohtani](https://github.com/shinyaohtani))
+
 ## [v1.0.1](https://github.com/shinyaohtani/master_delivery/tree/v1.0.1) (2020-04-25)
 
 [Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/4b0351ffd3cc1c8ddfeb76d39e2bddd0b8baa5a8...v1.0.1)
