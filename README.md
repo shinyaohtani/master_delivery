@@ -60,6 +60,15 @@ Usage: master_delivery -m <dir> -d <dir> [options]
                                      the commands on stderr.
                                      We strongly recommend "--dryrun" before running.
                                       (default: --no-dryrun)
+    -y, --[no-]yes                   Skip confirmation. It is recommended to execute
+                                     the command carefully without skipping confirmation.
+                                     With the "--yes" option, if you want to change the
+                                     command line argument even a little, remove the
+                                     "--yes" option once, execute it several times,
+                                     and experience confirmation several times.
+                                     Also, it's a good idea to add the "--yes" option
+                                     only after you start to feel confirmation annoying.
+                                      (default: --no-yes)
 
  Common options:
     -h, --help                       Show this message
