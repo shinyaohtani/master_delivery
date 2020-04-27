@@ -39,6 +39,17 @@ module MasterDelivery
     We strongly recommend "--dryrun" before running.
      (default: --no-dryrun)
   DRYRUN
+  DESC_SKIP_CONF = <<~SKIP_CONF
+    Skip confirmation. It is recommended to execute
+    the command carefully without skipping confirmation.
+    With the "--yes" option, if you want to change the
+    command line argument even a little, remove the
+    "--yes" option once, execute it several times,
+    and experience confirmation several times.
+    Also, it's a good idea to add the "--yes" option
+    only after you start to feel confirmation annoying.
+     (default: --no-yes)
+  SKIP_CONF
   DESC_EXAMPLE = <<~EXAMPLE
     Example:
         If you specify MASTER_DIR and DELIVERY_ROOT as follows:
@@ -70,16 +81,13 @@ module MasterDelivery
     end
 
     def run
-      unless check_param_consistency
-        puts 'See more with --help option'
-        return
-      end
+      return unless check_param_consistency
+
       master_dir = File.expand_path(@params[:master])
-      master_id = File.basename(master_dir)
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
-      arg_set = [master_id, @params[:delivery]]
+      arg_set = [File.basename(master_dir), @params[:delivery]]
       arg_hash = { type: @params[:type], dryrun: @params[:dryrun] }
-      return unless md.confirm(*arg_set, **arg_hash)
+      return unless md.confirm(*arg_set, skip_conf: @params[:yes], **arg_hash)
 
       md.deliver(*arg_set, **arg_hash)
       puts 'done!'
@@ -97,6 +105,7 @@ module MasterDelivery
       opts.on('-t [DELIVERY_TYPE]', '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/), &:to_sym)
       opts.on('-b [BACKUP_ROOT]',   '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
       opts.on('-D',                 '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
+      opts.on('-y',                 '--[no-]yes', *DESC_SKIP_CONF.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Common options:'
       # opts.on('-v',    '--verbose', 'Verbose mode. default: no') { |v| v }
@@ -119,11 +128,14 @@ module MasterDelivery
     end
 
     def check_param_consistency
-      check_param_master &&
-        check_param_delivery &&
-        check_param_backup &&
-        check_param_type &&
-        check_param_argv
+      return true if check_param_master &&
+                     check_param_delivery &&
+                     check_param_backup &&
+                     check_param_type &&
+                     check_param_argv
+
+      puts 'See more with --help option'
+      false
     end
 
     def check_param_master
