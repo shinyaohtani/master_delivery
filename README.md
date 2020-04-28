@@ -81,6 +81,8 @@ Usage: master_delivery -m <dir> -d <dir> [options]
                                      the commands on stderr.
                                      We strongly recommend "--dryrun" before running.
                                       (default: --no-dryrun)
+    -q, --[no-]quiet                 Suppress non-error messages
+                                      (default: --no-quiet)
     -y, --[no-]yes                   Skip confirmation. It is recommended to execute
                                      the command carefully without skipping confirmation.
                                      With the "--yes" option, if you want to change the
