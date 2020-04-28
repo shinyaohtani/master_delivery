@@ -15,7 +15,7 @@ If the master directory is git or svn managed, you can manage revisions of files
 
 If you specify command line arguments `MASTER_DIR` and `DELIVERY_ROOT` as follows:
 ```bash
-$ master_delivery -m ~/masters/my_home_setting -d /Users/foo
+$ master_delivery -m ~/master/my_home_setting -d /Users/foo
 ```
 This means:
 ```
