@@ -1,5 +1,19 @@
 # Changelog
 
+## [v1.0.4](https://github.com/shinyaohtani/master_delivery/tree/v1.0.4) (2020-04-28)
+
+[Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.3...v1.0.4)
+
+- fixed: skip confirmation option didn't work
+
+**Fixed bugs:**
+
+- skip\_confirmation does not work on v1.0.3 [\#15](https://github.com/shinyaohtani/master_delivery/issues/15)
+
+**Merged pull requests:**
+
+- fixed skip confirmation option [\#16](https://github.com/shinyaohtani/master_delivery/pull/16) ([shinyaohtani](https://github.com/shinyaohtani))
+
 ## [v1.0.3](https://github.com/shinyaohtani/master_delivery/tree/v1.0.3) (2020-04-28)
 
 [Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.2...v1.0.3)
