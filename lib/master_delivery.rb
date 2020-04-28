@@ -69,16 +69,15 @@ module MasterDelivery
       backup_dir
     end
 
-    def confirm(master_id, target_prefix, 
-                type: :symbolic_link, dryrun: false, skip_conf: false, quiet: false)
-
-      unless quiet
-        puts MSG_CONFIRMATION_INTRO unless skip_conf
-        print_params(master_id, target_prefix, type: type, dryrun: dryrun)
+    # @param params [Hash] :type, :dryrun, :yes, :quiet
+    def confirm(master_id, target_prefix, params)
+      unless params[:quiet]
+        puts MSG_CONFIRMATION_INTRO unless params[:yes]
+        print_params(master_id, target_prefix, params.slice(:type, :dryrun))
         print_sample(master_id, target_prefix)
       end
-      print MSG_CONFIRMATION.chomp unless skip_conf # use print instead of puts for '\n'
-      return true if skip_conf || gets.chomp == 'y'
+      print MSG_CONFIRMATION.chomp unless params[:yes] # use print instead of puts for '\n'
+      return true if params[:yes] || gets.chomp == 'y'
 
       puts 'aborted.'
       false
@@ -107,13 +106,14 @@ module MasterDelivery
       end
     end
 
-    def print_params(master_id, target_prefix, type:, dryrun:)
+    # @param params [Hash] :type, :dryrun
+    def print_params(master_id, target_prefix, params)
       mfiles = master_files(master_id)
       msg =  "(-m) MASTER_DIR:   -m #{@master_root}/#{master_id} (#{mfiles.size} master files)\n"
       msg += "(-d) DELIVER_ROOT: -d #{File.expand_path(target_prefix)}\n"
-      msg += "(-t) DELIVER_TYPE: -t #{type}\n"
+      msg += "(-t) DELIVER_TYPE: -t #{params[:type]}\n"
       msg += "(-b) BACKUP_ROOT:  -b #{@backup_root}\n"
-      msg += "(-D) DRYRUN:       #{dryrun ? '--dryrun' : '--no-dryrun'}\n"
+      msg += "(-D) DRYRUN:       #{params[:dryrun] ? '--dryrun' : '--no-dryrun'}\n"
       puts msg
     end
 

@@ -90,9 +90,9 @@ module MasterDelivery
       master_dir = File.expand_path(@params[:master])
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       arg_set = [File.basename(master_dir), @params[:delivery]]
-      return unless md.confirm(*arg_set, **(@params.slice(:type, :quiet, :dryrun, :skip_conf)))
+      return unless md.confirm(*arg_set, @params.slice(:type, :quiet, :dryrun, :yes))
 
-      md.deliver(*arg_set, **(@params.slice(:type, :dryrun)))
+      md.deliver(*arg_set, **@params.slice(:type, :dryrun))
       puts 'done!' unless @params[:quiet]
     end
 
