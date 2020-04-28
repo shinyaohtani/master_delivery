@@ -69,14 +69,18 @@ module MasterDelivery
       backup_dir
     end
 
-    def confirm(master_id, target_prefix, type: :symbolic_link, dryrun: false, skip_conf: false)
-      puts MSG_CONFIRMATION_INTRO unless skip_conf
+    def confirm(master_id, target_prefix, 
+                type: :symbolic_link, dryrun: false, skip_conf: false, quiet: false)
 
-      print_params(master_id, target_prefix, type: type, dryrun: dryrun)
-      print_sample(master_id, target_prefix)
+      unless quiet
+        puts MSG_CONFIRMATION_INTRO unless skip_conf
+        print_params(master_id, target_prefix, type: type, dryrun: dryrun)
+        print_sample(master_id, target_prefix)
+      end
       print MSG_CONFIRMATION.chomp unless skip_conf # use print instead of puts for '\n'
       return true if skip_conf || gets.chomp == 'y'
 
+      puts 'aborted.'
       false
     end
 

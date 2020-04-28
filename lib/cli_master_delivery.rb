@@ -39,6 +39,10 @@ module MasterDelivery
     We strongly recommend "--dryrun" before running.
      (default: --no-dryrun)
   DRYRUN
+  DESC_QUIET = <<~QUIET
+    Suppress non-error messages
+     (default: --no-quiet)
+  QUIET
   DESC_SKIP_CONF = <<~SKIP_CONF
     Skip confirmation. It is recommended to execute
     the command carefully without skipping confirmation.
@@ -70,7 +74,7 @@ module MasterDelivery
     attr_accessor :params
 
     def initialize
-      @params = { type: VALUE_DELIVERY_TYPE[0].to_sym, dryrun: false }
+      @params = { type: VALUE_DELIVERY_TYPE[0].to_sym, dryrun: false, quiet: false }
     end
 
     def parse_options
@@ -86,11 +90,10 @@ module MasterDelivery
       master_dir = File.expand_path(@params[:master])
       md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
       arg_set = [File.basename(master_dir), @params[:delivery]]
-      arg_hash = { type: @params[:type], dryrun: @params[:dryrun] }
-      return unless md.confirm(*arg_set, skip_conf: @params[:yes], **arg_hash)
+      return unless md.confirm(*arg_set, **(@params.slice(:type, :quiet, :dryrun, :skip_conf)))
 
-      md.deliver(*arg_set, **arg_hash)
-      puts 'done!'
+      md.deliver(*arg_set, **(@params.slice(:type, :dryrun)))
+      puts 'done!' unless @params[:quiet]
     end
 
     private
@@ -105,6 +108,7 @@ module MasterDelivery
       opts.on('-t [DELIVERY_TYPE]', '--type [DELIVERY_TYPE]', *DESC_DELIVERY_TYPE.split(/\R/), &:to_sym)
       opts.on('-b [BACKUP_ROOT]',   '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
       opts.on('-D',                 '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
+      opts.on('-q',                 '--[no-]quiet', *DESC_QUIET.split(/\R/)) { |v| v }
       opts.on('-y',                 '--[no-]yes', *DESC_SKIP_CONF.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Common options:'
