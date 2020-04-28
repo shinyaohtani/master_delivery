@@ -11,6 +11,27 @@ Do you have any experience that the master file is getting old gradually? `Maste
 
 If the master directory is git or svn managed, you can manage revisions of files that are delivered here and there at once with commands like git diff and git commit.
 
+## Example
+
+If you specify command line arguments `MASTER_DIR` and `DELIVERY_ROOT` as follows:
+```
+MASTER_DIR:    -m ~/masters/my_home_setting
+DELIVERY_ROOT: -d /Users/foo
+```
+
+and suppose master files in MASTER_DIR are as follows:
+```
+~/master/my_home_setting/.zshrc
+~/master/my_home_setting/work/.rubocop.yml
+```
+
+then these files will be delivered as the following files:
+```
+/Users/foo/.zshrc
+/Users/foo/work/.rubocop.yml
+```
+
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -30,19 +51,6 @@ Or install it yourself as:
 ## Usage
 
 ```
-Example:
-    If you specify MASTER_DIR and DELIVERY_ROOT as follows:
-       MASTER_DIR:    -m ~/masters/my_home_setting
-       DELIVERY_ROOT: -d /Users/foo
-
-    and suppose master files in MASTER_DIR are as follows:
-       ~/master/my_home_setting/.zshrc
-       ~/master/my_home_setting/work/.rubocop.yml
-
-    then these files will be delivered as the following files:
-       /Users/foo/.zshrc
-       /Users/foo/work/.rubocop.yml
-
 Usage: master_delivery -m <dir> -d <dir> [options]
  Required:
     -m, --master [MASTER_DIR]        Master snapshot directory. All master files in this
