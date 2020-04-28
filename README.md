@@ -19,11 +19,11 @@ $ master_delivery -m ~/masters/my_home_setting -d /Users/foo
 ```
 This means:
 ```
-MASTER_DIR:    -m ~/masters/my_home_setting
-DELIVERY_ROOT: -d /Users/foo
+(-m) MASTER_DIR:   -m ~/master/my_home_setting
+(-d) DELIVER_ROOT: -d /Users/foo
 ```
 
-and suppose master files in `MASTER_DIR` are as follows:
+and suppose master files now in `MASTER_DIR` are as follows:
 ```
 ~/master/my_home_setting/.zshrc
 ~/master/my_home_setting/work/.rubocop.yml
