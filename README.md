@@ -19,7 +19,7 @@ MASTER_DIR:    -m ~/masters/my_home_setting
 DELIVERY_ROOT: -d /Users/foo
 ```
 
-and suppose master files in MASTER_DIR are as follows:
+and suppose master files in `MASTER_DIR` are as follows:
 ```
 ~/master/my_home_setting/.zshrc
 ~/master/my_home_setting/work/.rubocop.yml
