@@ -6,6 +6,7 @@ require 'master_delivery/version'
 module MasterDelivery
   require 'fileutils'
   require 'find'
+  require 'pathname'
   require 'tmpdir'
   MSG_CONFIRMATION_INTRO = <<~CONFIRM_INTRO
 
@@ -147,11 +148,13 @@ module MasterDelivery
     end
 
     def backup_file_path(master, master_id, backup_dir)
-      File.expand_path(backup_dir) + relative_master_path(master, master_id)
+      path = File.expand_path(backup_dir) + relative_master_path(master, master_id)
+      Pathname.new(path).cleanpath.to_s
     end
 
     def target_file_path(master, master_id, target_prefix)
-      relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
+      path = relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
+      Pathname.new(path).cleanpath.to_s
     end
   end
 end
