@@ -5,6 +5,7 @@
 module MasterDelivery
   require 'master_delivery'
   require 'optparse'
+  require 'pathname'
 
   DESC_MASTER_DIR = <<~MASTER
     Master snapshot directory. All master files in this
@@ -87,9 +88,10 @@ module MasterDelivery
     def run
       return unless check_param_consistency
 
-      master_dir = File.expand_path(@params[:master])
-      md = MasterDelivery.new(File.dirname(master_dir), @params[:backup])
-      arg_set = [File.basename(master_dir), @params[:delivery]]
+      fix_param_paths(%i[master delivery backup])
+      master = @params[:master]
+      md = MasterDelivery.new(File.dirname(master), @params[:backup])
+      arg_set = [File.basename(master), @params[:delivery]]
       return unless md.confirm(*arg_set, @params.slice(:type, :quiet, :dryrun, :yes))
 
       md.deliver(*arg_set, **@params.slice(:type, :dryrun))
@@ -200,6 +202,18 @@ module MasterDelivery
 
       puts "Invalid arguments are given: #{ARGV}"
       false
+    end
+
+    def fix_param_paths(options)
+      options.each do |opt|
+        @params[opt] = fix_path_format(@params[opt])
+      end
+    end
+
+    def fix_path_format(param_path)
+      return param_path if !param_path.nil? && !param_path.empty?
+
+      Pathname.new(File.expand_path(param_path)).cleanpath.to_s
     end
   end
 end
