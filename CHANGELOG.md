@@ -1,5 +1,19 @@
 # Changelog
 
+## [v1.0.5](https://github.com/shinyaohtani/master_delivery/tree/v1.0.5) (2020-05-03)
+
+[Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.4...v1.0.5)
+
+- fixed pathname to clean '//' etc.
+
+**Fixed bugs:**
+
+- Avoid slash duplication of delivery\_root when -d '/' [\#10](https://github.com/shinyaohtani/master_delivery/issues/10)
+
+**Merged pull requests:**
+
+- fixed path'//' using pathname.cleanpath [\#20](https://github.com/shinyaohtani/master_delivery/pull/20) ([shinyaohtani](https://github.com/shinyaohtani))
+
 ## [v1.0.4](https://github.com/shinyaohtani/master_delivery/tree/v1.0.4) (2020-04-28)
 
 [Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.3...v1.0.4)
