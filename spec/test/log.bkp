@@ -1,0 +1,35 @@
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/.c /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/.c /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/a /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/a /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/b /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/b /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/e /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/d/e /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d/f
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f/.h /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d/f
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/d/f/.h /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d/f
+mv -f /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f/g /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-20200503/d/f
+mkdir -p /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f
+ln -s /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/d/f/g /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/d/f
+(-m) MASTER_DIR:   -m /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01 (6 master files)
+(-d) DELIVER_ROOT: -d /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox
+(-t) DELIVER_TYPE: -t symbolic_link
+(-b) BACKUP_ROOT:  -b /Users/shinya.ohtani/unix/cloned/master_delivery
+(-D) DRYRUN:       --dryrun
+
+Sample (from 6 master files):
+master:            /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/.c
+will be delivered: /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/.c
+ and backup:       /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-XXXX/.c
+done!
