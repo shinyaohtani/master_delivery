@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module MasterDelivery
-  VERSION = '1.0.4'
+  VERSION = '1.0.5'
   DESCRIPTION = <<~DESC
     Deliver all master files managed in a single master snapshot directory
     into the specified directory while maintaining the hierarchy of the
