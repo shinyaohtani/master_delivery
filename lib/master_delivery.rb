@@ -38,7 +38,7 @@ module MasterDelivery
 
     # @param master_id [String] Top directory name of master
     #
-    # @param target_prefix [String] Files will be delivered to this prefix location.
+    # @param delivery_root [String] Files will be delivered to this prefix location.
     #   If this prefix is empty, it will be placed in the root directory.
     #   This mechanism saves you from having to unnecessarily deepen the directory
     #   hierarchy under master_id.
@@ -46,36 +46,38 @@ module MasterDelivery
     #   Example of prefix
     #     master_id: MID
     #     master: $master_root/MID/a/b/readme.md
-    #     target_prefix: /Users/xxx/yyy
+    #     delivery_root: /Users/xxx/yyy
     #     delivery: /Users/xxx/yyy/a/b/readme.md
     #
     #   Example of no-prefix
     #     master_id: MID
     #     master: $master_root/MID/a/b/readme.md
-    #     target_prefix: (empty)
+    #     delivery_root: (empty)
     #     delivery: /a/b/readme.md
     #
     # @param type [symbol] only link (:symbolic_link) or copy master (:regular_file)
     # @param dryrun [boolean] if set this false, FileUtils::DryRun will be used.
     # note: Even if dryrun: true, @backup_dir is actually created! (for name-consistency)
-    def deliver(master_id, target_prefix, type: :symbolic_link, dryrun: false)
+    def deliver(basics, type: :symbolic_link, dryrun: false, verbose: false)
       FileUtils.mkdir_p(@backup_root)
       utils = dryrun ? FileUtils::DryRun : FileUtils
 
-      backup_dir = Dir.mktmpdir("#{master_id}-original-", @backup_root)
-      master_files(master_id).each do |master|
-        tfile = move_to_backup(master, utils, master_id, target_prefix, backup_dir)
-        deliver_to_target(master, utils, tfile, type)
+      backup_dir = Dir.mktmpdir("#{basics[:master_id]}-original-", @backup_root)
+      puts "mkdir -p #{backup_dir}" if verbose
+      mfiles = master_files(basics[:master_id])
+      mfiles.each do |master|
+        tfile = move_to_backup(master, utils, basics, backup_dir, verbose)
+        deliver_to_target(master, utils, tfile, type, verbose)
       end
-      backup_dir
+      [mfiles, backup_dir]
     end
 
     # @param params [Hash] :type, :dryrun, :yes, :quiet
-    def confirm(master_id, target_prefix, params)
+    def confirm(basics, params)
       unless params[:quiet]
         puts MSG_CONFIRMATION_INTRO unless params[:yes]
-        print_params(master_id, target_prefix, params.slice(:type, :dryrun))
-        print_sample(master_id, target_prefix)
+        print_params(basics, params.slice(:type, :dryrun))
+        print_sample(basics)
       end
       print MSG_CONFIRMATION.chomp unless params[:yes] # use print instead of puts for '\n'
       return true if params[:yes] || gets.chomp == 'y'
@@ -87,42 +89,42 @@ module MasterDelivery
     private
 
     # Move a master file currently used to backup/
-    def move_to_backup(master, utils, master_id, target_prefix, backup_dir)
-      backupfiledir = File.dirname(backup_file_path(master, master_id, backup_dir))
-      utils.mkdir_p(backupfiledir)
-      tfile = target_file_path(master, master_id, target_prefix)
-      utils.mv(tfile, backupfiledir, force: true)
+    def move_to_backup(master, utils, basics, backup_dir, verbose)
+      backupfiledir = File.dirname(backup_file_path(master, basics[:master_id], backup_dir))
+      utils.mkdir_p(backupfiledir, verbose: verbose)
+      tfile = target_file_path(master, basics)
+      utils.mv(tfile, backupfiledir, force: true, verbose: verbose)
       tfile
     end
 
     # Deliver a link to a master (or a copy of a master) in the appropriate directory
-    def deliver_to_target(master, utils, tfile, type)
+    def deliver_to_target(master, utils, tfile, type, verbose)
       tfiledir = File.dirname(tfile)
-      utils.mkdir_p(tfiledir)
+      utils.mkdir_p(tfiledir, verbose: verbose)
       case type
       when :symbolic_link
-        utils.ln_s(master, tfiledir)
+        utils.ln_s(master, tfiledir, verbose: verbose)
       when :regular_file
-        utils.cp(master, tfiledir)
+        utils.cp(master, tfiledir, verbose: verbose)
       end
     end
 
     # @param params [Hash] :type, :dryrun
-    def print_params(master_id, target_prefix, params)
-      mfiles = master_files(master_id)
-      msg =  "(-m) MASTER_DIR:   -m #{@master_root}/#{master_id} (#{mfiles.size} master files)\n"
-      msg += "(-d) DELIVER_ROOT: -d #{File.expand_path(target_prefix)}\n"
+    def print_params(basics, params)
+      mfiles = master_files(basics[:master_id])
+      msg =  "(-m) MASTER_DIR:   -m #{@master_root}/#{basics[:master_id]} (#{mfiles.size} master files)\n"
+      msg += "(-d) DELIVER_ROOT: -d #{File.expand_path(basics[:delivery_root])}\n"
       msg += "(-t) DELIVER_TYPE: -t #{params[:type]}\n"
       msg += "(-b) BACKUP_ROOT:  -b #{@backup_root}\n"
       msg += "(-D) DRYRUN:       #{params[:dryrun] ? '--dryrun' : '--no-dryrun'}\n"
       puts msg
     end
 
-    def print_sample(master_id, target_prefix)
-      mfiles = master_files(master_id)
-      sample_target = target_file_path(mfiles[0], master_id, target_prefix)
-      sample_backup = backup_file_path(mfiles[0], master_id,
-                                       @backup_root + "/#{master_id}-original-XXXX")
+    def print_sample(basics)
+      mfiles = master_files(basics[:master_id])
+      sample_target = target_file_path(mfiles[0], basics)
+      sample_backup = backup_file_path(mfiles[0], basics[:master_id],
+                                       @backup_root + "/#{basics[:master_id]}-original-XXXX")
       puts <<~SAMPLE
 
         Sample (from #{mfiles.size} master files):
@@ -152,8 +154,8 @@ module MasterDelivery
       Pathname.new(path).cleanpath.to_s
     end
 
-    def target_file_path(master, master_id, target_prefix)
-      path = relative_master_path(master, master_id).prepend(File.expand_path(target_prefix))
+    def target_file_path(master, basics)
+      path = relative_master_path(master, basics[:master_id]).prepend(File.expand_path(basics[:delivery_root]))
       Pathname.new(path).cleanpath.to_s
     end
   end
