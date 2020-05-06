@@ -44,6 +44,11 @@ module MasterDelivery
     Suppress non-error messages
      (default: --no-quiet)
   QUIET
+  DESC_VERBOSE = <<~VERBOSE
+    Process actual commands for file operations, such as
+    moving files and creating folders, one by one.
+     (default: --no-verbose)
+  VERBOSE
   DESC_SKIP_CONF = <<~SKIP_CONF
     Skip confirmation. It is recommended to execute
     the command carefully without skipping confirmation.
@@ -89,16 +94,22 @@ module MasterDelivery
       return unless check_param_consistency
 
       fix_param_paths(%i[master delivery backup])
-      master = @params[:master]
-      md = MasterDelivery.new(File.dirname(master), @params[:backup])
-      arg_set = [File.basename(master), @params[:delivery]]
-      return unless md.confirm(*arg_set, @params.slice(:type, :quiet, :dryrun, :yes))
+      basics = delivery_basics
+      md = MasterDelivery.new(basics[:master_dir], basics[:backup_root])
+      return unless md.confirm(basics, @params.slice(:type, :quiet, :dryrun, :yes))
 
-      md.deliver(*arg_set, **@params.slice(:type, :dryrun))
-      puts 'done!' unless @params[:quiet]
+      mfiles, _tmpdir = md.deliver(basics, **@params.slice(:type, :dryrun, :verbose))
+      puts "done! (#{mfiles.size} master files are delivered.)" unless @params[:quiet]
     end
 
     private
+
+    def delivery_basics
+      { master_dir: File.dirname(@params[:master]),
+        master_id: File.basename(@params[:master]),
+        delivery_root: @params[:delivery],
+        backup_root: @params[:backup] }
+    end
 
     def define_options(opts) # rubocop:disable Metrics/AbcSize
       opts.version = VERSION
@@ -111,10 +122,10 @@ module MasterDelivery
       opts.on('-b [BACKUP_ROOT]',   '--backup [BACKUP_ROOT]', *DESC_BACKUP_ROOT.split(/\R/)) { |v| v }
       opts.on('-D',                 '--[no-]dryrun', *DESC_DRYRUN.split(/\R/)) { |v| v }
       opts.on('-q',                 '--[no-]quiet', *DESC_QUIET.split(/\R/)) { |v| v }
+      opts.on('-v',                 '--[no-]verbose', *DESC_VERBOSE.split(/\R/)) { |v| v }
       opts.on('-y',                 '--[no-]yes', *DESC_SKIP_CONF.split(/\R/)) { |v| v }
       opts.separator ''
       opts.separator ' Common options:'
-      # opts.on('-v',    '--verbose', 'Verbose mode. default: no') { |v| v }
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
