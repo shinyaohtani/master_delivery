@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.0.6](https://github.com/shinyaohtani/master_delivery/tree/v1.0.6) (2020-05-06)
+
+[Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.5...v1.0.6)
+
+- Verbose mode has been introduced to trace delivery commands!
+
+
+**Implemented enhancements:**
+
+- Option to carefully trace delivery commands one by one [\#5](https://github.com/shinyaohtani/master_delivery/issues/5)
+
+**Merged pull requests:**
+
+- Feature/\#5 trace delivery commands [\#23](https://github.com/shinyaohtani/master_delivery/pull/23) ([shinyaohtani](https://github.com/shinyaohtani))
+
 ## [v1.0.5](https://github.com/shinyaohtani/master_delivery/tree/v1.0.5) (2020-05-03)
 
 [Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.4...v1.0.5)
