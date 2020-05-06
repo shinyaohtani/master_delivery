@@ -32,4 +32,4 @@ Sample (from 6 master files):
 master:            /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sample01/.c
 will be delivered: /Users/shinya.ohtani/unix/cloned/master_delivery/spec/test/sandbox/.c
  and backup:       /Users/shinya.ohtani/unix/cloned/master_delivery/sample01-original-XXXX/.c
-done!
+done! (6 master files are delivered.)
