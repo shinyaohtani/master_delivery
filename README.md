@@ -83,6 +83,9 @@ Usage: master_delivery -m <dir> -d <dir> [options]
                                       (default: --no-dryrun)
     -q, --[no-]quiet                 Suppress non-error messages
                                       (default: --no-quiet)
+    -v, --[no-]verbose               Process actual commands for file operations, such as
+                                     moving files and creating folders, one by one.
+                                      (default: --no-verbose)
     -y, --[no-]yes                   Skip confirmation. It is recommended to execute
                                      the command carefully without skipping confirmation.
                                      With the "--yes" option, if you want to change the
