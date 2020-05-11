@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.0.7](https://github.com/shinyaohtani/master_delivery/tree/v1.0.7) (2020-05-11)
+
+[Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.6...v1.0.7)
+
+- No changes on behavior.
+
+**Closed issues:**
+
+- Non urgent refactoring [\#27](https://github.com/shinyaohtani/master_delivery/issues/27)
+
+**Merged pull requests:**
+
+- version -\> v1.0.7 [\#30](https://github.com/shinyaohtani/master_delivery/pull/30) ([shinyaohtani](https://github.com/shinyaohtani))
+- Simplified code [\#28](https://github.com/shinyaohtani/master_delivery/pull/28) ([shinyaohtani](https://github.com/shinyaohtani))
+
 ## [v1.0.6](https://github.com/shinyaohtani/master_delivery/tree/v1.0.6) (2020-05-06)
 
 [Full Changelog](https://github.com/shinyaohtani/master_delivery/compare/v1.0.5...v1.0.6)
