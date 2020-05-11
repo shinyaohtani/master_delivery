@@ -21,4 +21,5 @@ module MasterDelivery
     of files that are delivered here and there at once with commands
     like git diff and git commit.
   DESC
+  REPOSITORY_URL = 'https://github.com/shinyaohtani/master_delivery'
 end
