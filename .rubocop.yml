@@ -13,24 +13,11 @@ require:
 
 AllCops:
   TargetRubyVersion: 2.5
+  NewCops: enable
 
 Layout/EndAlignment:
   Enabled: true
   AutoCorrect: true
-
-Layout/LineLength:
-  Enabled: true
-  AutoCorrect: false
-  Max: 120
-
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
 
 Metrics/BlockLength:
   Enabled: true
@@ -40,18 +27,3 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Enabled: true
   Max: 30
-
-Style/ExponentialNotation:
-  Enabled: true
-
-Style/HashEachMethods:
-  Enabled: true
-  AutoCorrect: true
-
-Style/HashTransformKeys:
-  Enabled: true
-  AutoCorrect: true
-
-Style/HashTransformValues:
-  Enabled: true
-  AutoCorrect: true

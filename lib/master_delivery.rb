@@ -25,6 +25,7 @@ module MasterDelivery
   #
   class MasterDelivery
     attr_reader :backup_root
+
     # @param master_root [String] Path to the dir including master dirs.
     # @param backup_root [String] Path to the dir in which backup masters are created.
     def initialize(master_root, backup_root = '')
