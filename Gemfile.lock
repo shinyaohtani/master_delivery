@@ -81,7 +81,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.1)
     retriable (3.1.2)
-    rexml (3.2.4)
+    rexml (3.2.5)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -125,7 +125,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 2.0)
-  github_changelog_generator (>= 1.15.0)
+  github_changelog_generator (>= 1.15.2)
   master_delivery!
   pry (>= 0.12.2)
   pry-byebug (>= 3.9.0)
